@@ -79,7 +79,7 @@ blacklisted["focal-3.3.7"]=1
 blacklisted["focal-3.4.10"]=1
 
 for dir in \
-    {buster,bullseye,bookworm,bionic,focal}{/slim,} \
+    alpine {buster,bullseye,bookworm,bionic,focal}{/slim,} \
 ; do
     variant="$(basename "$dir")"
 

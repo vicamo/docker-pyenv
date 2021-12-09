@@ -26,6 +26,28 @@ versions=(
     )
 )
 
+declare -A blacklisted
+# https://github.com/vicamo/docker-pyenv/runs/4473301383
+blacklisted["buster-2.3.7"]=1
+# https://github.com/vicamo/docker-pyenv/runs/4473546041
+blacklisted["buster-2.4.6"]=1
+# https://github.com/vicamo/docker-pyenv/runs/4473706322
+blacklisted["buster-2.5.6"]=1
+blacklisted["buster-2.6.9"]=1
+blacklisted["buster-3.0.1"]=1
+blacklisted["buster-3.2.6"]=1
+blacklisted["buster-3.3.7"]=1
+blacklisted["buster-3.4.10"]=1
+# https://github.com/vicamo/docker-pyenv/runs/4473301216
+blacklisted["bullseye-2.5.6"]=1
+# https://github.com/vicamo/docker-pyenv/runs/4473545988
+blacklisted["bullseye-2.6.9"]=1
+# https://github.com/vicamo/docker-pyenv/runs/4473706117
+blacklisted["bullseye-3.0.1"]=1
+blacklisted["bullseye-3.2.6"]=1
+blacklisted["bullseye-3.3.7"]=1
+blacklisted["bullseye-3.4.10"]=1
+
 for dir in \
     {buster,bullseye}{/slim,} \
 ; do
@@ -49,8 +71,15 @@ for dir in \
 
     { generated_warning; cat "$template"; } > "$dir/Dockerfile"
 
+    available=()
+    for version in "${versions[@]}"; do
+        if [ -z "${blacklisted["$suite-$version"]:-}" ]; then
+            available+=("$version")
+        fi
+    done
+
     sed -ri \
         -e "s!%%BASE_IMAGE%%!${base}!" \
-        -e "s!%%PYENV_VERSIONS%%!${versions[*]}!" \
+        -e "s!%%PYENV_VERSIONS%%!${available[*]}!" \
         "$dir/Dockerfile"
 done

@@ -72,6 +72,10 @@ RUN set -eux; \
     ; \
     pyenv update
 
+# > =============================================================== <
+
+FROM builder AS build-all
+
 RUN set -eux; \
     for version in ${PYENV_VERSIONS}; do \
         env PYTHON_CONFIGURE_OPTS=" \
@@ -97,7 +101,7 @@ RUN set -eux; \
 
 FROM base
 
-COPY --from=builder ${PYENV_ROOT} ${PYENV_ROOT}
+COPY --from=build-all ${PYENV_ROOT} ${PYENV_ROOT}
 
 RUN set -eux; \
     pyenv versions

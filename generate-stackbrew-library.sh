@@ -49,7 +49,7 @@ getArches() {
 
     eval "declare -g -A parentRepoToArches=( $(
         find -name 'Dockerfile' -exec awk '
-                toupper($1) == "FROM" && $2 !~ /^(base)(:|$)/ {
+                toupper($1) == "FROM" && $2 !~ /^(base|build|builder)(:|$)/ {
                     print "'"$officialImagesUrl"'" $2
                 }
             ' '{}' + \
@@ -107,7 +107,7 @@ for dir in \
 
     case "$dir" in
     *)
-        variantParent="$(awk 'toupper($1) == "FROM" && $2 !~ /^(base)(:|$)/ { print $2 }' "$dir/Dockerfile")"
+        variantParent="$(awk 'toupper($1) == "FROM" && $2 !~ /^(base|build|builder)(:|$)/ { print $2 }' "$dir/Dockerfile")"
         variantArches="${parentRepoToArches[$variantParent]}"
         ;;
     esac

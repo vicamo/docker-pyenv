@@ -70,7 +70,6 @@ RUN set -eux; \
     for version in ${PYENV_VERSIONS}; do \
         env PYTHON_CONFIGURE_OPTS=" \
             --enable-shared \
-            --enable-optimizations \
             --enable-loadable-sqlite-extensions \
             --with-lto \
             --with-system-expat \

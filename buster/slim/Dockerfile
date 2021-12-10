@@ -21,6 +21,8 @@ RUN set -eux; \
     apt-get install --yes --no-install-recommends \
         bzip2 \
         ca-certificates \
+        curl \
+        git \
         libexpat1 \
         $(apt-cache search --names-only 'libffi[0-9]+$' 2>/dev/null | awk '{print $1}') \
         libncurses6 \
@@ -32,6 +34,13 @@ RUN set -eux; \
     ; \
     rm -rf /var/lib/apt/lists/*_dists_*
 
+RUN set -eux; \
+    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash; \
+    git clone https://github.com/momo-lab/xxenv-latest \
+        ${PYENV_ROOT}/plugins/xxenv-latest \
+    ; \
+    pyenv update
+
 # > =============================================================== <
 
 FROM base AS builder
@@ -41,9 +50,6 @@ RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
     apt-get update --quiet; \
     apt-get install --yes --no-install-recommends \
-        curl \
-        git \
-        \
         build-essential \
         gdb \
         lcov \
@@ -64,13 +70,6 @@ RUN set -eux; \
         zlib1g-dev \
     ; \
     rm -rf /var/lib/apt/lists/*_dists_*
-
-RUN set -eux; \
-    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash; \
-    git clone https://github.com/momo-lab/xxenv-latest \
-        ${PYENV_ROOT}/plugins/xxenv-latest \
-    ; \
-    pyenv update
 
 # > =============================================================== <
 
@@ -101,7 +100,9 @@ RUN set -eux; \
 
 FROM base
 
-COPY --from=build-all ${PYENV_ROOT} ${PYENV_ROOT}
+COPY --from=build-all ${PYENV_ROOT}/versions/ ${PYENV_ROOT}/versions/
 
 RUN set -eux; \
+    pyenv rehash; \
+    pyenv global $(pyenv versions --bare | tac); \
     pyenv versions

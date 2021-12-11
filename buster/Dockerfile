@@ -24,7 +24,8 @@ RUN set -eux; \
         git \
         libexpat1 \
         $(apt-cache search --names-only 'libffi[0-9]+$' 2>/dev/null | awk '{print $1}') \
-        libncurses6 \
+        libncursesw5 \
+        $(apt-cache show libncursesw6 >/dev/null 2>&1 && echo libncursesw6 || true) \
         $(apt-cache search --names-only 'libreadline[0-9]+$' 2>/dev/null | awk '{print $1}') \
         libsqlite3-0 \
         libssl1.1 \
@@ -57,7 +58,8 @@ RUN set -eux; \
         libgdbm-compat-dev \
         libgdbm-dev \
         liblzma-dev \
-        libncurses5-dev \
+        libncursesw5-dev \
+        $(apt-cache show libncurses-dev >/dev/null 2>&1 && echo libncurses-dev || true) \
         libreadline6-dev \
         libsqlite3-dev \
         libssl-dev \
@@ -75,6 +77,7 @@ RUN set -eux; \
 FROM builder AS build-all
 
 ARG PYENV_VERSIONS="2.1.3 2.2.3 2.7.18 3.5.10 3.6.15 3.7.12 3.8.12 3.9.9 3.10.1"
+ARG ALLOW_FAILURES=
 
 RUN set -eux; \
     for version in ${PYENV_VERSIONS}; do \
@@ -85,7 +88,7 @@ RUN set -eux; \
             --with-system-expat \
             --with-system-ffi \
             " \
-            pyenv latest install ${version}; \
+            pyenv latest install ${version} || test -n "${ALLOW_FAILURES}"; \
     done; \
     pyenv global $(pyenv versions --bare | tac); \
     pyenv versions; \

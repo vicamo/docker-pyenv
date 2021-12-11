@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+allow_failures=
+while test $# -gt 0; do
+    case "$1" in
+    --allow-failures) allow_failures=yes; shift ;;
+    *)
+        echo "Unknown argument: $1" >&2; exit 1 ;;
+    esac
+done
+
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 generated_warning() {
@@ -47,39 +56,50 @@ blacklisted["bullseye-3.0.1"]=1
 blacklisted["bullseye-3.2.6"]=1
 blacklisted["bullseye-3.3.7"]=1
 blacklisted["bullseye-3.4.10"]=1
+# https://github.com/vicamo/docker-pyenv/runs/4493744141
+blacklisted["bionic-2.5.6"]=1
+blacklisted["bionic-2.6.9"]=1
+blacklisted["bionic-3.0.1"]=1
+blacklisted["bionic-3.2.6"]=1
+blacklisted["bionic-3.3.7"]=1
+blacklisted["bionic-3.4.10"]=1
+blacklisted["focal-2.5.6"]=1
+blacklisted["focal-2.6.9"]=1
+blacklisted["focal-3.0.1"]=1
+blacklisted["focal-3.2.6"]=1
+blacklisted["focal-3.3.7"]=1
+blacklisted["focal-3.4.10"]=1
 
 for dir in \
-    {buster,bullseye}{/slim,} \
+    {buster,bullseye,bionic,focal}{/slim,} \
 ; do
     variant="$(basename "$dir")"
 
     [ -d "$dir" ] || continue
 
     case "$variant" in
-    slim)
-        template='debian'
-        suite=$(basename "$(dirname "$dir")")
-        base="debian:$suite-slim"
-        ;;
-    *)
-        template='debian'
-        suite="$variant"
-        base="buildpack-deps:$variant"
-        ;;
+    slim) suite=$(basename "$(dirname "$dir")") ;;
+    *)    suite="$variant" ;;
     esac
-    template="Dockerfile-${template}.template"
+    base="$(< "$dir/base")"
+    template="$(basename "$(readlink -f "$dir/template")")"
 
     { generated_warning; cat "$template"; } > "$dir/Dockerfile"
 
     available=()
-    for version in "${versions[@]}"; do
-        if [ -z "${blacklisted["$suite-$version"]:-}" ]; then
-            available+=("$version")
-        fi
-    done
+    if [ -n "${allow_failures}" ]; then
+        available+=( "${versions[@]}" )
+    else
+        for version in "${versions[@]}"; do
+            if [ -z "${blacklisted["$suite-$version"]:-}" ]; then
+                available+=("$version")
+            fi
+        done
+    fi
 
     sed -ri \
         -e "s!%%BASE_IMAGE%%!${base}!" \
         -e "s!%%PYENV_VERSIONS%%!${available[*]}!" \
+        ${allow_failures:+-e "s!^ARG ALLOW_FAILURES=.*!ARG ALLOW_FAILURES=true!"} \
         "$dir/Dockerfile"
 done

@@ -56,18 +56,11 @@ for dir in \
     [ -d "$dir" ] || continue
 
     case "$variant" in
-    slim)
-        template='debian'
-        suite=$(basename "$(dirname "$dir")")
-        base="debian:$suite-slim"
-        ;;
-    *)
-        template='debian'
-        suite="$variant"
-        base="buildpack-deps:$variant"
-        ;;
+    slim) suite=$(basename "$(dirname "$dir")") ;;
+    *)    suite="$variant" ;;
     esac
-    template="Dockerfile-${template}.template"
+    base="$(< "$dir/base")"
+    template="$(basename "$(readlink -f "$dir/template")")"
 
     { generated_warning; cat "$template"; } > "$dir/Dockerfile"
 

@@ -15,7 +15,7 @@ self="$(basename "${BASH_SOURCE[0]}")"
 cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 versions=( $(
-    find -name Dockerfile -exec grep -e '^ENV PYENV_VERSIONS=' {} + | \
+    find -name Dockerfile -exec grep -e '^ARG PYENV_VERSIONS=' {} + | \
         cut -d\" -f2 | \
         tr ' ' '\n' | \
         sort -u -V
@@ -49,7 +49,7 @@ getArches() {
 
     eval "declare -g -A parentRepoToArches=( $(
         find -name 'Dockerfile' -exec awk '
-                toupper($1) == "FROM" && $2 !~ /^(base)(:|$)/ {
+                toupper($1) == "FROM" && $2 !~ /^(base|build|builder)(:|$)/ {
                     print "'"$officialImagesUrl"'" $2
                 }
             ' '{}' + \
@@ -107,7 +107,7 @@ for dir in \
 
     case "$dir" in
     *)
-        variantParent="$(awk 'toupper($1) == "FROM" && $2 !~ /^(base)(:|$)/ { print $2 }' "$dir/Dockerfile")"
+        variantParent="$(awk 'toupper($1) == "FROM" && $2 !~ /^(base|build|builder)(:|$)/ { print $2 }' "$dir/Dockerfile")"
         variantArches="${parentRepoToArches[$variantParent]}"
         ;;
     esac

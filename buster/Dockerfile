@@ -7,7 +7,6 @@
 FROM buildpack-deps:buster AS base
 
 ENV PYENV_ROOT="/opt/pyenv"
-ENV PYENV_VERSIONS="2.1.3 2.2.3 2.7.18 3.5.10 3.6.15 3.7.12 3.8.12 3.9.9 3.10.1"
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$PATH"
 
 # http://bugs.python.org/issue19846
@@ -21,6 +20,8 @@ RUN set -eux; \
     apt-get install --yes --no-install-recommends \
         bzip2 \
         ca-certificates \
+        curl \
+        git \
         libexpat1 \
         $(apt-cache search --names-only 'libffi[0-9]+$' 2>/dev/null | awk '{print $1}') \
         libncurses6 \
@@ -32,6 +33,13 @@ RUN set -eux; \
     ; \
     rm -rf /var/lib/apt/lists/*_dists_*
 
+RUN set -eux; \
+    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash; \
+    git clone https://github.com/momo-lab/xxenv-latest \
+        ${PYENV_ROOT}/plugins/xxenv-latest \
+    ; \
+    pyenv update
+
 # > =============================================================== <
 
 FROM base AS builder
@@ -41,9 +49,6 @@ RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
     apt-get update --quiet; \
     apt-get install --yes --no-install-recommends \
-        curl \
-        git \
-        \
         build-essential \
         gdb \
         lcov \
@@ -65,12 +70,11 @@ RUN set -eux; \
     ; \
     rm -rf /var/lib/apt/lists/*_dists_*
 
-RUN set -eux; \
-    curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash; \
-    git clone https://github.com/momo-lab/xxenv-latest \
-        ${PYENV_ROOT}/plugins/xxenv-latest \
-    ; \
-    pyenv update
+# > =============================================================== <
+
+FROM builder AS build-all
+
+ARG PYENV_VERSIONS="2.1.3 2.2.3 2.7.18 3.5.10 3.6.15 3.7.12 3.8.12 3.9.9 3.10.1"
 
 RUN set -eux; \
     for version in ${PYENV_VERSIONS}; do \
@@ -97,7 +101,9 @@ RUN set -eux; \
 
 FROM base
 
-COPY --from=builder ${PYENV_ROOT} ${PYENV_ROOT}
+COPY --from=build-all ${PYENV_ROOT}/versions/ ${PYENV_ROOT}/versions/
 
 RUN set -eux; \
+    pyenv rehash; \
+    pyenv global $(pyenv versions --bare | tac); \
     pyenv versions

@@ -24,6 +24,7 @@ RUN set -eux; \
         git \
         libexpat1 \
         $(apt-cache search --names-only 'libffi[0-9]+$' 2>/dev/null | awk '{print $1}') \
+        $(apt-cache search --names-only 'libmpdec[0-9]+$' 2>/dev/null | awk '{print $1}') \
         libncursesw5 \
         $(apt-cache show libncursesw6 >/dev/null 2>&1 && echo libncursesw6 || true) \
         $(apt-cache search --names-only 'libreadline[0-9]+$' 2>/dev/null | awk '{print $1}') \
@@ -57,6 +58,7 @@ RUN set -eux; \
         libffi-dev \
         libgdbm-compat-dev \
         libgdbm-dev \
+        libmpdec-dev \
         liblzma-dev \
         libncursesw5-dev \
         $(apt-cache show libncurses-dev >/dev/null 2>&1 && echo libncurses-dev || true) \
@@ -87,6 +89,7 @@ RUN set -eux; \
             --with-lto \
             --with-system-expat \
             --with-system-ffi \
+            --with-system-mpdec \
             " \
             pyenv latest install ${version} || test -n "${ALLOW_FAILURES}"; \
     done; \

@@ -71,6 +71,7 @@ RUN set -eux; \
 FROM builder AS build-all
 
 ARG PYENV_VERSIONS="%%PYENV_VERSIONS%%"
+ARG ALLOW_FAILURES=
 
 RUN set -eux; \
     for version in ${PYENV_VERSIONS}; do \
@@ -81,7 +82,7 @@ RUN set -eux; \
             --with-system-expat \
             --with-system-ffi \
             " \
-            pyenv latest install ${version}; \
+            pyenv latest install ${version} || test -n "${ALLOW_FAILURES}"; \
     done; \
     pyenv global $(pyenv versions --bare | tac); \
     pyenv versions; \

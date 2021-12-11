@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+allow_failures=
+while test $# -gt 0; do
+    case "$1" in
+    --allow-failures) allow_failures=yes; shift ;;
+    *)
+        echo "Unknown argument: $1" >&2; exit 1 ;;
+    esac
+done
+
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 generated_warning() {
@@ -78,14 +87,19 @@ for dir in \
     { generated_warning; cat "$template"; } > "$dir/Dockerfile"
 
     available=()
-    for version in "${versions[@]}"; do
-        if [ -z "${blacklisted["$suite-$version"]:-}" ]; then
-            available+=("$version")
-        fi
-    done
+    if [ -n "${allow_failures}" ]; then
+        available+=( "${versions[@]}" )
+    else
+        for version in "${versions[@]}"; do
+            if [ -z "${blacklisted["$suite-$version"]:-}" ]; then
+                available+=("$version")
+            fi
+        done
+    fi
 
     sed -ri \
         -e "s!%%BASE_IMAGE%%!${base}!" \
         -e "s!%%PYENV_VERSIONS%%!${available[*]}!" \
+        ${allow_failures:+-e "s!^ARG ALLOW_FAILURES=.*!ARG ALLOW_FAILURES=true!"} \
         "$dir/Dockerfile"
 done

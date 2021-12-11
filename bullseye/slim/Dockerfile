@@ -24,7 +24,8 @@ RUN set -eux; \
         git \
         libexpat1 \
         $(apt-cache search --names-only 'libffi[0-9]+$' 2>/dev/null | awk '{print $1}') \
-        libncurses6 \
+        libncursesw5 \
+        $(apt-cache show libncursesw6 >/dev/null 2>&1 && echo libncursesw6 || true) \
         $(apt-cache search --names-only 'libreadline[0-9]+$' 2>/dev/null | awk '{print $1}') \
         libsqlite3-0 \
         libssl1.1 \
@@ -57,7 +58,8 @@ RUN set -eux; \
         libgdbm-compat-dev \
         libgdbm-dev \
         liblzma-dev \
-        libncurses5-dev \
+        libncursesw5-dev \
+        $(apt-cache show libncurses-dev >/dev/null 2>&1 && echo libncurses-dev || true) \
         libreadline6-dev \
         libsqlite3-dev \
         libssl-dev \

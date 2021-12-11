@@ -1,7 +1,6 @@
 FROM %%BASE_IMAGE%% AS base
 
 ENV PYENV_ROOT="/opt/pyenv"
-ENV PYENV_VERSIONS="%%PYENV_VERSIONS%%"
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$PATH"
 
 # http://bugs.python.org/issue19846
@@ -68,6 +67,8 @@ RUN set -eux; \
 # > =============================================================== <
 
 FROM builder AS build-all
+
+ARG PYENV_VERSIONS="%%PYENV_VERSIONS%%"
 
 RUN set -eux; \
     for version in ${PYENV_VERSIONS}; do \

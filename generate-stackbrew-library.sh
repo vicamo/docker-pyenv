@@ -15,7 +15,7 @@ self="$(basename "${BASH_SOURCE[0]}")"
 cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 versions=( $(
-    find -name Dockerfile -exec grep -e '^ENV PYENV_VERSIONS=' {} + | \
+    find -name Dockerfile -exec grep -e '^ARG PYENV_VERSIONS=' {} + | \
         cut -d\" -f2 | \
         tr ' ' '\n' | \
         sort -u -V

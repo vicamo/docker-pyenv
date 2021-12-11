@@ -7,7 +7,6 @@
 FROM buildpack-deps:bullseye AS base
 
 ENV PYENV_ROOT="/opt/pyenv"
-ENV PYENV_VERSIONS="2.1.3 2.2.3 2.3.7 2.4.6 2.7.18 3.5.10 3.6.15 3.7.12 3.8.12 3.9.9 3.10.1"
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:$PATH"
 
 # http://bugs.python.org/issue19846
@@ -74,6 +73,8 @@ RUN set -eux; \
 # > =============================================================== <
 
 FROM builder AS build-all
+
+ARG PYENV_VERSIONS="2.1.3 2.2.3 2.3.7 2.4.6 2.7.18 3.5.10 3.6.15 3.7.12 3.8.12 3.9.9 3.10.1"
 
 RUN set -eux; \
     for version in ${PYENV_VERSIONS}; do \

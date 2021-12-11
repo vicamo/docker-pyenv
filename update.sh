@@ -47,9 +47,22 @@ blacklisted["bullseye-3.0.1"]=1
 blacklisted["bullseye-3.2.6"]=1
 blacklisted["bullseye-3.3.7"]=1
 blacklisted["bullseye-3.4.10"]=1
+# https://github.com/vicamo/docker-pyenv/runs/4493744141
+blacklisted["bionic-2.5.6"]=1
+blacklisted["bionic-2.6.9"]=1
+blacklisted["bionic-3.0.1"]=1
+blacklisted["bionic-3.2.6"]=1
+blacklisted["bionic-3.3.7"]=1
+blacklisted["bionic-3.4.10"]=1
+blacklisted["focal-2.5.6"]=1
+blacklisted["focal-2.6.9"]=1
+blacklisted["focal-3.0.1"]=1
+blacklisted["focal-3.2.6"]=1
+blacklisted["focal-3.3.7"]=1
+blacklisted["focal-3.4.10"]=1
 
 for dir in \
-    {buster,bullseye}{/slim,} \
+    {buster,bullseye,bionic,focal}{/slim,} \
 ; do
     variant="$(basename "$dir")"
 

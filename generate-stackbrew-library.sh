@@ -3,6 +3,7 @@ set -Eeuo pipefail
 #set -x
 
 declare -A aliases=(
+    [2.7]='2'
     [3.10]='3 latest'
 )
 
@@ -94,14 +95,20 @@ for dir in \
         versionAliases+=( $fullVersion $version ${aliases[$version]:-} )
     done
 
-    # 3.10.1-slim-bullseye, 3.10-slim-bullseye, latest-slim-bullseye, etc.
-    variantAliases=( "${versionAliases[@]/%/-$variant}" )
+    # slim-bullseye
+    variantAliases=( "$variant" )
 
-    # 3.10.1-slim, 3.10-slim, latest-slim, etc.
+    # 3.10.1-slim-bullseye, 3.10-slim-bullseye, latest-slim-bullseye, etc.
+    variantAliases+=( "${versionAliases[@]/%/-$variant}" )
+
+    # 3.10.1-slim, 3.10-slim, latest-slim, slim, etc.
     debianSuite="${debianSuites[$version]:-$defaultDebianSuite}"
     case "$variant" in
     *-"$debianSuite") # "slim-bullseye", etc need "slim"
-        variantAliases+=( "${versionAliases[@]/%/-${variant%-$debianSuite}}" )
+        variantAliases+=(
+            "${variant%-$debianSuite}"
+            "${versionAliases[@]/%/-${variant%-$debianSuite}}"
+        )
         ;;
     esac
 

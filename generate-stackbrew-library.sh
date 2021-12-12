@@ -75,7 +75,7 @@ join() {
 }
 
 for dir in \
-    {bullseye,buster,bionic,focal}{,/slim} \
+    {buster,bullseye,bookworm,bionic,focal}{,/slim} \
 ; do
     variant="$(basename "$dir")"
 

@@ -29,7 +29,7 @@ RUN set -eux; \
         $(apt-cache show libncursesw6 >/dev/null 2>&1 && echo libncursesw6 || true) \
         $(apt-cache search --names-only 'libreadline[0-9]+$' 2>/dev/null | awk '{print $1}') \
         libsqlite3-0 \
-        libssl1.1 \
+        $(apt-cache search --names-only 'libssl[0-9]' 2>/dev/null | awk '{print $1}') \
         lzma \
         zlib1g \
     ; \
@@ -91,7 +91,7 @@ RUN set -eux; \
             --with-system-ffi \
             --with-system-mpdec \
             " \
-            pyenv latest install ${version} || test -n "${ALLOW_FAILURES}"; \
+            pyenv install ${version} || test -n "${ALLOW_FAILURES}"; \
     done; \
     pyenv global $(pyenv versions --bare | tac); \
     pyenv versions; \

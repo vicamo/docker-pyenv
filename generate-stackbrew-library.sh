@@ -2,11 +2,6 @@
 set -Eeuo pipefail
 #set -x
 
-declare -A aliases=(
-    [2.7]='2'
-    [3.10]='3 latest'
-)
-
 defaultDebianSuite='bullseye'
 declare -A debianSuites=(
     #[3.10]='bullseye'
@@ -22,6 +17,19 @@ versions=( $(
         sort -u -V
     )
 )
+
+declare -A majors
+for version in "${versions[@]}"; do
+    majors[${version%%.*}]="${version%.*}"
+done
+
+declare -A aliases
+latest=0
+for major in "${!majors[@]}"; do
+	aliases["${majors[$major]}"]="$major"
+	test $major -le $latest || latest=$major
+done
+aliases["${majors[$latest]}"]="$latest latest"
 
 # get the most recent commit which modified any of "$@"
 fileCommit() {

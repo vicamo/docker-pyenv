@@ -25,12 +25,13 @@ EOF
 
 versions=(
     $(docker run vicamo/pyenv sh -c " \
+        pyenv update >/dev/null 2>&1; \
         for prefix in \$(pyenv install --list | \
             grep -e '^  [[:digit:]]\(\.[[:digit:]]\+\)\+$' | \
             cut -d. -f1,2 | \
             sort -u -V) \
         ; do \
-            pyenv latest -p \$prefix; \
+            pyenv latest --known \$prefix; \
         done | sort -u -V"
     )
 )
@@ -44,6 +45,7 @@ blacklisted["buster-2.4.6"]=1
 blacklisted["buster-2.5.6"]=1
 blacklisted["buster-2.6.9"]=1
 blacklisted["buster-3.0.1"]=1
+blacklisted["buster-3.1.5"]=1
 blacklisted["buster-3.2.6"]=1
 blacklisted["buster-3.3.7"]=1
 blacklisted["buster-3.4.10"]=1
@@ -53,6 +55,7 @@ blacklisted["bullseye-2.5.6"]=1
 blacklisted["bullseye-2.6.9"]=1
 # https://github.com/vicamo/docker-pyenv/runs/4473706117
 blacklisted["bullseye-3.0.1"]=1
+blacklisted["bullseye-3.1.5"]=1
 blacklisted["bullseye-3.2.6"]=1
 blacklisted["bullseye-3.3.7"]=1
 blacklisted["bullseye-3.4.10"]=1
@@ -60,6 +63,7 @@ blacklisted["bullseye-3.4.10"]=1
 blacklisted["bookworm-2.5.6"]=1
 blacklisted["bookworm-2.6.9"]=1
 blacklisted["bookworm-3.0.1"]=1
+blacklisted["bookworm-3.1.5"]=1
 blacklisted["bookworm-3.2.6"]=1
 blacklisted["bookworm-3.3.7"]=1
 blacklisted["bookworm-3.4.10"]=1
@@ -68,12 +72,14 @@ blacklisted["bookworm-3.5.10"]=1
 blacklisted["bionic-2.5.6"]=1
 blacklisted["bionic-2.6.9"]=1
 blacklisted["bionic-3.0.1"]=1
+blacklisted["bionic-3.1.5"]=1
 blacklisted["bionic-3.2.6"]=1
 blacklisted["bionic-3.3.7"]=1
 blacklisted["bionic-3.4.10"]=1
 blacklisted["focal-2.5.6"]=1
 blacklisted["focal-2.6.9"]=1
 blacklisted["focal-3.0.1"]=1
+blacklisted["focal-3.1.5"]=1
 blacklisted["focal-3.2.6"]=1
 blacklisted["focal-3.3.7"]=1
 blacklisted["focal-3.4.10"]=1

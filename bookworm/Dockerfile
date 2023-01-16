@@ -78,7 +78,7 @@ RUN set -eux; \
 
 FROM builder AS build-all
 
-ARG PYENV_VERSIONS="2.1.3 2.2.3 2.3.7 2.4.6 2.7.18 3.6.15 3.7.12 3.8.12 3.9.9 3.10.1"
+ARG PYENV_VERSIONS="2.1.3 2.2.3 2.3.7 2.4.6 2.7.18 3.6.15 3.7.16 3.8.16 3.9.16 3.10.9 3.11.1"
 ARG ALLOW_FAILURES=
 
 RUN set -eux; \

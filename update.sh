@@ -83,9 +83,17 @@ blacklisted["focal-3.1.5"]=1
 blacklisted["focal-3.2.6"]=1
 blacklisted["focal-3.3.7"]=1
 blacklisted["focal-3.4.10"]=1
+blacklisted["jammy-2.5.6"]=1
+blacklisted["jammy-2.6.9"]=1
+blacklisted["jammy-3.0.1"]=1
+blacklisted["jammy-3.1.5"]=1
+blacklisted["jammy-3.2.6"]=1
+blacklisted["jammy-3.3.7"]=1
+blacklisted["jammy-3.4.10"]=1
+blacklisted["jammy-3.5.10"]=1
 
 for dir in \
-    {buster,bullseye,bookworm,bionic,focal}{/slim,} \
+    {buster,bullseye,bookworm,bionic,focal,jammy}{/slim,} \
 ; do
     variant="$(basename "$dir")"
 

@@ -16,7 +16,7 @@ jobs:
     name: Generate Jobs
     runs-on: ubuntu-latest
     outputs:
-      strategy: ${{ steps.generate-jobs.outputs.strategy }}
+      STRATEGY: ${{ steps.generate-jobs.outputs.STRATEGY }}
     steps:
       - uses: actions/checkout@v1
       - id: generate-jobs
@@ -26,13 +26,13 @@ jobs:
           # Force override generated docker image name to "pyenv"
           strategy="$(env GITHUB_REPOSITORY=vicamo/pyenv ~/bashbrew/scripts/github-actions/generate.sh)"
           jq . <<<"$strategy" # sanity check / debugging aid
-          echo "::set-output name=strategy::$strategy"
+          echo "STRATEGY=$strategy" >> $GITHUB_OUTPUT
         env:
           BASHBREW_NAMESPACE: vicamo
 
   test:
     needs: generate-jobs
-    strategy: ${{ fromJson(needs.generate-jobs.outputs.strategy) }}
+    strategy: ${{ fromJson(needs.generate-jobs.outputs.STRATEGY) }}
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     steps:
